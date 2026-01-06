@@ -62,16 +62,15 @@ export default function Success() {
       setLoading(true);
       setError(null);
 
-      // Fetch users from Supabase Auth admin API
-      const { data, error: fetchError } = await supabase.auth.admin.listUsers();
+      // Fetch users from API endpoint
+      const response = await fetch('/api/list-users');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
 
-      if (fetchError) throw fetchError;
-
-      setUsers(data.users.map(user => ({
-        id: user.id,
-        email: user.email || 'No email',
-        created_at: user.created_at,
-      })));
+      const data = await response.json();
+      setUsers(data.users);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch users');
       console.error('Error fetching users:', err);
