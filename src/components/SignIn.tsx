@@ -105,7 +105,7 @@ export default function SignIn({ onSignInSuccess }: SignInProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={6}
+              //minLength={6}
               className="form-input"
             />
           </div>
