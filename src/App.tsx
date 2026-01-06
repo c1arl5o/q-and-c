@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from './config/supabaseClient'
 import SignIn from './components/SignIn'
 import Onboarding from './components/Onboarding'
-import Success from './components/Success'
+import Home from './components/Home'
 
-type AppView = 'signin' | 'onboarding' | 'success';
+type AppView = 'signin' | 'onboarding' | 'home';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('signin')
@@ -53,7 +53,7 @@ function App() {
         const onboardingCompleted = user.user_metadata?.onboarding_completed
         
         if (onboardingCompleted) {
-          setCurrentView('success')
+          setCurrentView('home')
         } else {
           setCurrentView('onboarding')
         }
@@ -69,7 +69,7 @@ function App() {
   }
 
   const handleOnboardingComplete = () => {
-    setCurrentView('success')
+    setCurrentView('home')
   }
 
   if (loading) {
@@ -84,8 +84,8 @@ function App() {
       {currentView === 'onboarding' && (
         <Onboarding onComplete={handleOnboardingComplete} />
       )}
-      {currentView === 'success' && (
-        <Success />
+      {currentView === 'home' && (
+        <Home />
       )}
     </>
   )

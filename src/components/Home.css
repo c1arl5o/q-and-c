@@ -1,0 +1,130 @@
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffffff 100%);
+  padding: 2rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #ff9966;
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.1);
+  border: 2px solid #FFCC99;
+  margin-bottom: 2rem;
+  min-height: 33vh;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.dashboard-greeting {
+  font-size: 1.5rem;
+  color: #ff9966;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.workout-circles {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.workout-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFCC99 0%, #ff9966 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 153, 102, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.workout-circle:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(255, 153, 102, 0.4);
+}
+
+.feed-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.1);
+  border: 2px solid #FFCC99;
+}
+
+.feed-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.feed-placeholder {
+  text-align: center;
+  color: #999;
+  font-size: 1.1rem;
+  padding: 3rem 0;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: 1rem;
+  }
+
+  .dashboard,
+  .feed-section {
+    padding: 1.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-greeting {
+    font-size: 1.2rem;
+  }
+
+  .workout-circles {
+    gap: 1rem;
+  }
+
+  .workout-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+  }
+
+  .feed-title {
+    font-size: 1.4rem;
+  }
+}
