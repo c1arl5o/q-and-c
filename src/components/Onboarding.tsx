@@ -9,8 +9,6 @@ interface OnboardingProps {
 export default function Onboarding({ onComplete }: OnboardingProps) {
   const [displayName, setDisplayName] = useState('');
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState<number>(3);
-  const [fitnessGoal, setFitnessGoal] = useState('');
-  const [experienceLevel, setExperienceLevel] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,8 +30,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         data: {
           display_name: displayName,
           workouts_per_week: workoutsPerWeek,
-          fitness_goal: fitnessGoal,
-          experience_level: experienceLevel,
           onboarding_completed: true,
         }
       });
@@ -79,7 +75,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               How often do you want to work out per week?
             </label>
             <div className="workout-frequency">
-              {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+              {[3, 4, 5, 6, 7].map((num) => (
                 <button
                   key={num}
                   type="button"
@@ -93,48 +89,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             <p className="frequency-label">
               {workoutsPerWeek} {workoutsPerWeek === 1 ? 'day' : 'days'} per week
             </p>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">
-              What's your primary fitness goal?
-            </label>
-            <select
-              value={fitnessGoal}
-              onChange={(e) => setFitnessGoal(e.target.value)}
-              className="form-select"
-            >
-              <option value="">Select a goal</option>
-              <option value="lose-weight">Lose Weight</option>
-              <option value="build-muscle">Build Muscle</option>
-              <option value="improve-endurance">Improve Endurance</option>
-              <option value="stay-active">Stay Active</option>
-              <option value="increase-flexibility">Increase Flexibility</option>
-              <option value="general-fitness">General Fitness</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">
-              What's your experience level?
-            </label>
-            <div className="experience-options">
-              {[
-                { value: 'beginner', label: 'Beginner', desc: 'New to fitness' },
-                { value: 'intermediate', label: 'Intermediate', desc: 'Some experience' },
-                { value: 'advanced', label: 'Advanced', desc: 'Regular training' },
-              ].map((level) => (
-                <button
-                  key={level.value}
-                  type="button"
-                  className={`experience-button ${experienceLevel === level.value ? 'active' : ''}`}
-                  onClick={() => setExperienceLevel(level.value)}
-                >
-                  <div className="experience-label">{level.label}</div>
-                  <div className="experience-desc">{level.desc}</div>
-                </button>
-              ))}
-            </div>
           </div>
 
           {error && (
