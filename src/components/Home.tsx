@@ -77,7 +77,6 @@ export default function Home() {
       )}
 
       <div className="dashboard">
-        <h1 className="dashboard-title">My Dashboard</h1>
         <p className="dashboard-greeting">Hello {displayName}!</p>
         
         <div className="workout-circles">
