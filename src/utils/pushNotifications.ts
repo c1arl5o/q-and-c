@@ -9,7 +9,8 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
     .replace(/_/g, '/');
 
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  const buffer = new ArrayBuffer(rawData.length);
+  const outputArray = new Uint8Array(buffer);
 
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
@@ -53,9 +54,10 @@ export async function subscribeToPush(
   }
 
   try {
+    const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      applicationServerKey: applicationServerKey as BufferSource,
     });
 
     console.log('Push subscription successful:', subscription);
