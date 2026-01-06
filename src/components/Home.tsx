@@ -6,6 +6,7 @@ export default function Home() {
   const [displayName, setDisplayName] = useState<string>('');
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState<number>(3);
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -36,6 +37,45 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      {/* Header */}
+      <header className="header">
+        <button 
+          className="burger-menu" 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <h1 className="header-title">Q&C</h1>
+      </header>
+
+      {/* Sidebar */}
+      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <h2>Menu</h2>
+          <button 
+            className="close-btn" 
+            onClick={() => setIsSidebarOpen(false)}
+            aria-label="Close menu"
+          >
+            ×
+          </button>
+        </div>
+        <nav className="sidebar-nav">
+          <a href="#" className="nav-item active">Home</a>
+        </nav>
+      </div>
+
+      {/* Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="overlay" 
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       <div className="dashboard">
         <h1 className="dashboard-title">My Dashboard</h1>
         <p className="dashboard-greeting">Hello {displayName}!</p>
