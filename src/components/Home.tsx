@@ -77,7 +77,7 @@ export default function Home() {
       )}
 
       <div className="dashboard">
-        <p className="dashboard-greeting">Hello {displayName}!</p>
+        <p className="dashboard-greeting">Hallo {displayName}!</p>
         
         <div className="workout-circles">
           {Array.from({ length: workoutsPerWeek }, (_, index) => (
@@ -85,6 +85,19 @@ export default function Home() {
               {index + 1}
             </div>
           ))}
+        </div>
+
+        <div className="metrics-container">
+          <div className="metric-box">
+            <div className="metric-label">Deine Münzen</div>
+            <div className="metric-icon">🪙</div>
+            <div className="metric-value">0</div>
+          </div>
+          <div className="metric-box">
+            <div className="metric-label">Deine Streak</div>
+            <div className="metric-icon">🔥</div>
+            <div className="metric-value">0</div>
+          </div>
         </div>
       </div>
 
