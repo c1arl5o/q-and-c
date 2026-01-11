@@ -369,15 +369,14 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff9966 0%, #FFCC99 100%);
+  background: #99E7FF;
   border: none;
   color: white;
   font-size: 2.5rem;
   font-weight: 300;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.4);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(153, 231, 255, 0.4);
   z-index: 900;
   display: flex;
   align-items: center;
@@ -385,12 +384,11 @@
 }
 
 .add-button:hover {
-  transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 6px 24px rgba(255, 153, 102, 0.5);
+  box-shadow: 0 6px 24px rgba(153, 231, 255, 0.5);
 }
 
 .add-button:active {
-  transform: scale(1.05) rotate(90deg);
+  opacity: 0.9;
 }
 
 /* Menu Overlay */
@@ -414,20 +412,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   border: 2px solid #FFCC99;
   z-index: 950;
-  animation: slideUp 0.3s ease;
   overflow: hidden;
   min-width: 200px;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .menu-option {
@@ -443,7 +429,6 @@
   font-weight: 500;
   color: #333;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .menu-option:first-child {
