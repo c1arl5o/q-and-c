@@ -89,12 +89,10 @@ export default function Home() {
 
         <div className="metrics-container">
           <div className="metric-box">
-            <div className="metric-label">Deine Münzen</div>
             <div className="metric-icon">🪙</div>
             <div className="metric-value">0</div>
           </div>
           <div className="metric-box">
-            <div className="metric-label">Deine Streak</div>
             <div className="metric-icon">🔥</div>
             <div className="metric-value">0</div>
           </div>
