@@ -134,6 +134,13 @@ export default function Home() {
               <span className="menu-icon">💬</span>
               <span>Add status post</span>
             </button>
+            <button className="menu-option" onClick={() => {
+              // Add shop logic will go here
+              setIsMenuOpen(false);
+            }}>
+              <span className="menu-icon">🛒</span>
+              <span>Shop</span>
+            </button>
           </div>
         </>
       )}
