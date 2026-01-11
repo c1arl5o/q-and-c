@@ -4,8 +4,9 @@ import SignIn from './components/SignIn'
 import Onboarding from './components/Onboarding'
 import Home from './components/Home'
 import Shop from './components/Shop'
+import Add from './components/Add'
 
-type AppView = 'signin' | 'onboarding' | 'home' | 'shop';
+type AppView = 'signin' | 'onboarding' | 'home' | 'shop' | 'add';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('signin')
@@ -94,6 +95,9 @@ function App() {
       )}
       {currentView === 'shop' && (
         <Shop onViewChange={handleViewChange} />
+      )}
+      {currentView === 'add' && (
+        <Add onViewChange={handleViewChange} />
       )}
     </>
   )

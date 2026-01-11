@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import './Home.css';
 
 interface HomeProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
 }
 
 export default function Home({ onViewChange }: HomeProps) {
@@ -111,8 +111,8 @@ export default function Home({ onViewChange }: HomeProps) {
           ></div>
           <div className="flyout-menu">
             <button className="menu-option" onClick={() => {
-              // Add activity logic will go here
               setIsMenuOpen(false);
+              onViewChange('add');
             }}>
               <span className="menu-icon">🏃</span>
               <span>Add activity</span>

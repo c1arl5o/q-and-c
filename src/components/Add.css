@@ -1,0 +1,12 @@
+.add-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.add-container p {
+  font-size: 1.5rem;
+  color: #333;
+}
