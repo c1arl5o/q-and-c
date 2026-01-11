@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../config/supabaseClient';
 import './Home.css';
 
-export default function Home() {
+interface HomeProps {
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop') => void;
+}
+
+export default function Home({ onViewChange }: HomeProps) {
   // const [displayName, setDisplayName] = useState<string>('');
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState<number>(3);
   const [loading, setLoading] = useState(true);
@@ -66,6 +70,17 @@ export default function Home() {
         </div>
         <nav className="sidebar-nav">
           <a href="#" className="nav-item active">Home</a>
+          <a 
+            href="#shop" 
+            className="nav-item"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsSidebarOpen(false);
+              onViewChange('shop');
+            }}
+          >
+            Shop
+          </a>
         </nav>
       </div>
 
@@ -133,13 +148,6 @@ export default function Home() {
             }}>
               <span className="menu-icon">💬</span>
               <span>Add status post</span>
-            </button>
-            <button className="menu-option" onClick={() => {
-              // Add shop logic will go here
-              setIsMenuOpen(false);
-            }}>
-              <span className="menu-icon">🛒</span>
-              <span>Shop</span>
             </button>
           </div>
         </>

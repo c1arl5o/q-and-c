@@ -3,8 +3,9 @@ import { supabase } from './config/supabaseClient'
 import SignIn from './components/SignIn'
 import Onboarding from './components/Onboarding'
 import Home from './components/Home'
+import Shop from './components/Shop'
 
-type AppView = 'signin' | 'onboarding' | 'home';
+type AppView = 'signin' | 'onboarding' | 'home' | 'shop';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('signin')
@@ -72,6 +73,10 @@ function App() {
     setCurrentView('home')
   }
 
+  const handleViewChange = (view: AppView) => {
+    setCurrentView(view)
+  }
+
   if (loading) {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>Loading...</div>
   }
@@ -85,7 +90,10 @@ function App() {
         <Onboarding onComplete={handleOnboardingComplete} />
       )}
       {currentView === 'home' && (
-        <Home />
+        <Home onViewChange={handleViewChange} />
+      )}
+      {currentView === 'shop' && (
+        <Shop onViewChange={handleViewChange} />
       )}
     </>
   )
