@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../config/supabaseClient';
+import Header from './Header';
+import Sidebar from './Sidebar';
 import './Home.css';
 
 interface HomeProps {
@@ -42,55 +44,28 @@ export default function Home({ onViewChange }: HomeProps) {
 
   return (
     <div className="home-container">
-      {/* Header */}
-      <header className="header">
-        <button 
-          className="burger-menu" 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          aria-label="Toggle menu"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-        <h1 className="header-title">Q&C</h1>
-      </header>
+      <Header onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-      {/* Sidebar */}
-      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <h2>Menu</h2>
-          <button 
-            className="close-btn" 
-            onClick={() => setIsSidebarOpen(false)}
-            aria-label="Close menu"
-          >
-            ×
-          </button>
-        </div>
-        <nav className="sidebar-nav">
-          <a href="#" className="nav-item active">Home</a>
-          <a 
-            href="#shop" 
-            className="nav-item"
-            onClick={(e) => {
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        navItems={[
+          {
+            label: 'Home',
+            href: '#',
+            active: true
+          },
+          {
+            label: 'Shop',
+            href: '#shop',
+            onClick: (e) => {
               e.preventDefault();
               setIsSidebarOpen(false);
               onViewChange('shop');
-            }}
-          >
-            Shop
-          </a>
-        </nav>
-      </div>
-
-      {/* Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="overlay" 
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+            }
+          }
+        ]}
+      />
 
       <div className="dashboard">
         
