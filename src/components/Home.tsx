@@ -7,6 +7,7 @@ export default function Home() {
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState<number>(3);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -102,6 +103,40 @@ export default function Home() {
         <h2 className="feed-title">Feed</h2>
         <p className="feed-placeholder">Posts will appear here soon...</p>
       </div>
+
+      {/* Add Button and Flyout Menu */}
+      <button 
+        className="add-button" 
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label="Add new post"
+      >
+        +
+      </button>
+
+      {isMenuOpen && (
+        <>
+          <div 
+            className="menu-overlay" 
+            onClick={() => setIsMenuOpen(false)}
+          ></div>
+          <div className="flyout-menu">
+            <button className="menu-option" onClick={() => {
+              // Add activity logic will go here
+              setIsMenuOpen(false);
+            }}>
+              <span className="menu-icon">🏃</span>
+              <span>Add activity</span>
+            </button>
+            <button className="menu-option" onClick={() => {
+              // Add status post logic will go here
+              setIsMenuOpen(false);
+            }}>
+              <span className="menu-icon">💬</span>
+              <span>Add status post</span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

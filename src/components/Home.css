@@ -360,3 +360,122 @@
     font-size: 1.4rem;
   }
 }
+
+/* Add Button - Fixed at Bottom */
+.add-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9966 0%, #FFCC99 100%);
+  border: none;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.4);
+  transition: all 0.3s ease;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-button:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 24px rgba(255, 153, 102, 0.5);
+}
+
+.add-button:active {
+  transform: scale(1.05) rotate(90deg);
+}
+
+/* Menu Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 899;
+}
+
+/* Flyout Menu */
+.flyout-menu {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 2px solid #FFCC99;
+  z-index: 950;
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+  min-width: 200px;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: white;
+  border: none;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menu-option:first-child {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-option:hover {
+  background: #fff5f0;
+}
+
+.menu-option:active {
+  background: #ffe5d9;
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .add-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    font-size: 2.2rem;
+  }
+
+  .flyout-menu {
+    bottom: 5rem;
+    right: 1.5rem;
+  }
+}
