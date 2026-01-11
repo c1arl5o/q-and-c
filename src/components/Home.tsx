@@ -3,7 +3,7 @@ import { supabase } from '../config/supabaseClient';
 import './Home.css';
 
 export default function Home() {
-  const [displayName, setDisplayName] = useState<string>('');
+  // const [displayName, setDisplayName] = useState<string>('');
   const [workoutsPerWeek, setWorkoutsPerWeek] = useState<number>(3);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function Home() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        setDisplayName(user.user_metadata?.display_name || 'there');
+        // setDisplayName(user.user_metadata?.display_name || 'there');
         setWorkoutsPerWeek(user.user_metadata?.workouts_per_week || 3);
       }
     } catch (error) {
