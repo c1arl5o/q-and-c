@@ -77,7 +77,6 @@ export default function Home() {
       )}
 
       <div className="dashboard">
-        <p className="dashboard-greeting">Hallo {displayName}!</p>
         
         <div className="workout-circles">
           {Array.from({ length: workoutsPerWeek }, (_, index) => (
