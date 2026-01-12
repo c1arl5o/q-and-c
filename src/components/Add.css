@@ -1,12 +1,103 @@
 .add-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  padding: 20px;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffffff 100%);
+  padding: 80px 20px 20px;
 }
 
-.add-container p {
+.add-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.add-title {
+  font-size: 1.8rem;
+  color: #ff9966;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.selection-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.selection-box {
+  flex: 1;
+  max-width: 300px;
+  min-width: 200px;
+  background: white;
+  border: 2px solid #FFCC99;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.selection-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(255, 153, 102, 0.2);
+  border-color: #ff9966;
+}
+
+.selection-box.selected {
+  background: linear-gradient(135deg, #FFCC99 0%, #ff9966 100%);
+  border-color: #ff9966;
+  transform: scale(1.05);
+}
+
+.selection-box.selected .selection-icon,
+.selection-box.selected .selection-label {
+  color: white;
+}
+
+.selection-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s;
+}
+
+.selection-box:hover .selection-icon {
+  transform: scale(1.1);
+}
+
+.selection-label {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ff9966;
+  transition: color 0.3s;
+}
+
+.content-area {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.1);
+  border: 2px solid #FFCC99;
+  margin-top: 2rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.placeholder-text {
   font-size: 1.5rem;
-  color: #333;
+  color: #ff9966;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
 }
