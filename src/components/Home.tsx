@@ -117,11 +117,11 @@ export default function Home({ onViewChange }: HomeProps) {
           .from('challenges')
           .select(`
             *,
-            creator:created_by_user_id!challenges_created_by_user_id_fkey (
+            creator:created_by_user_id (
               email,
               raw_user_meta_data
             ),
-            target:target_user_id!challenges_target_user_id_fkey (
+            target:target_user_id (
               email,
               raw_user_meta_data
             )
