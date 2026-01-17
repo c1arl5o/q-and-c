@@ -1,7 +1,12 @@
 import { useState, useRef } from 'react';
+import { supabase } from '../../config/supabaseClient';
 import './AddComponents.css';
 
-export default function Activity() {
+interface ActivityProps {
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+}
+
+export default function Activity({ onViewChange }: ActivityProps) {
   const [activityType, setActivityType] = useState<'walking' | 'running' | 'swimming'>('walking');
   const [time, setTime] = useState('');
   const [distance, setDistance] = useState('');
@@ -33,17 +38,51 @@ export default function Activity() {
     setIsSaving(true);
     
     try {
-      // TODO: Upload photo to Supabase storage if photo exists
-      // TODO: Insert activity into Supabase activities table
-      
-      // Placeholder for Supabase integration
-      console.log('Saving activity:', {
-        activityType,
-        time,
-        distance,
-        customText,
-        photo: photo?.name,
-      });
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('You must be logged in to save an activity');
+        return;
+      }
+
+      let photoUrl: string | null = null;
+
+      // Upload photo to Supabase storage if photo exists
+      if (photo) {
+        const fileExt = photo.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('activity-photos')
+          .upload(fileName, photo);
+
+        if (uploadError) {
+          console.error('Error uploading photo:', uploadError);
+          alert('Failed to upload photo, but will continue saving activity');
+        } else {
+          // Get public URL for the uploaded photo
+          const { data: { publicUrl } } = supabase.storage
+            .from('activity-photos')
+            .getPublicUrl(uploadData.path);
+          photoUrl = publicUrl;
+        }
+      }
+
+      // Insert activity into Supabase activities table
+      const { error: insertError } = await supabase
+        .from('activities')
+        .insert({
+          user_id: user.id,
+          activity_type: activityType,
+          time_minutes: parseInt(time),
+          distance_km: parseFloat(distance),
+          notes: customText || null,
+          photo_url: photoUrl
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
       
       alert('Activity saved successfully!');
       
@@ -57,6 +96,9 @@ export default function Activity() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+
+      // Navigate back to home
+      setTimeout(() => onViewChange('home'), 500);
     } catch (error) {
       console.error('Error saving activity:', error);
       alert('Failed to save activity');

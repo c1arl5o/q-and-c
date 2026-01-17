@@ -8,7 +8,11 @@ interface User {
   created_at: string;
 }
 
-export default function Challenge() {
+interface ChallengeProps {
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+}
+
+export default function Challenge({ onViewChange }: ChallengeProps) {
   const [challengeDescription, setChallengeDescription] = useState('');
   const [challengeGoal, setChallengeGoal] = useState('');
   const [challengeDuration, setChallengeDuration] = useState('');
@@ -67,19 +71,30 @@ export default function Challenge() {
       return;
     }
 
+    if (!currentUserId) {
+      alert('You must be logged in to create a challenge');
+      return;
+    }
+
     setIsSaving(true);
     
     try {
-      // TODO: Insert challenge into Supabase challenges table
-      
-      // Placeholder for Supabase integration
-      console.log('Saving challenge:', {
-        challengeDescription,
-        challengeGoal,
-        challengeDuration,
-        challengeTarget,
-        targetUserId: challengeTarget === 'someone-else' ? selectedUserId : currentUserId,
-      });
+      const targetUserId = challengeTarget === 'someone-else' ? selectedUserId : currentUserId;
+
+      // Insert challenge into Supabase challenges table
+      const { error: insertError } = await supabase
+        .from('challenges')
+        .insert({
+          created_by_user_id: currentUserId,
+          target_user_id: targetUserId,
+          description: challengeDescription || null,
+          goal: challengeGoal,
+          duration_days: challengeDuration ? parseInt(challengeDuration) : null
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
       
       alert('Challenge created successfully!');
       
@@ -89,6 +104,9 @@ export default function Challenge() {
       setChallengeDuration('');
       setChallengeTarget('self');
       setSelectedUserId(null);
+
+      // Navigate back to home
+      setTimeout(() => onViewChange('home'), 500);
     } catch (error) {
       console.error('Error saving challenge:', error);
       alert('Failed to create challenge');

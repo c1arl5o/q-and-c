@@ -8,7 +8,7 @@ interface AddProps {
   onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
 }
 
-export default function Add({ onViewChange: _onViewChange }: AddProps) {
+export default function Add({ onViewChange }: AddProps) {
   const [selectedType, setSelectedType] = useState<'activity' | 'status' | 'challenge' | null>(null);
 
   return (
@@ -42,11 +42,11 @@ export default function Add({ onViewChange: _onViewChange }: AddProps) {
         {selectedType && (
           <div className="content-area">
             {selectedType === 'activity' ? (
-              <Activity />
+              <Activity onViewChange={onViewChange} />
             ) : selectedType === 'status' ? (
-              <Post />
+              <Post onViewChange={onViewChange} />
             ) : (
-              <Challenge />
+              <Challenge onViewChange={onViewChange} />
             )}
           </div>
         )}

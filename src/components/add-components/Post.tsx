@@ -8,7 +8,11 @@ interface User {
   created_at: string;
 }
 
-export default function Post() {
+interface PostProps {
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+}
+
+export default function Post({ onViewChange }: PostProps) {
   const [postText, setPostText] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -85,15 +89,54 @@ export default function Post() {
     setIsSaving(true);
     
     try {
-      // TODO: Upload photo to Supabase storage if photo exists
-      // TODO: Insert post into Supabase posts table
-      
-      // Placeholder for Supabase integration
-      console.log('Saving post:', {
-        postText,
-        photo: photo?.name,
-        notifyUsers: selectedUsers,
-      });
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('You must be logged in to create a post');
+        return;
+      }
+
+      let photoUrl: string | null = null;
+
+      // Upload photo to Supabase storage if photo exists
+      if (photo) {
+        const fileExt = photo.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('post-photos')
+          .upload(fileName, photo);
+
+        if (uploadError) {
+          console.error('Error uploading photo:', uploadError);
+          alert('Failed to upload photo, but will continue saving post');
+        } else {
+          // Get public URL for the uploaded photo
+          const { data: { publicUrl } } = supabase.storage
+            .from('post-photos')
+            .getPublicUrl(uploadData.path);
+          photoUrl = publicUrl;
+        }
+      }
+
+      // Insert post into Supabase posts table
+      const { error: insertError } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          content: postText,
+          photo_url: photoUrl
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      // TODO: Send push notifications to selected users if wantToNotify is true
+      if (wantToNotify && selectedUsers.length > 0) {
+        console.log('Would notify users:', selectedUsers);
+        // This can be implemented later with the push notification API
+      }
       
       alert('Post saved successfully!');
       
@@ -106,6 +149,9 @@ export default function Post() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+
+      // Navigate back to home
+      setTimeout(() => onViewChange('home'), 500);
     } catch (error) {
       console.error('Error saving post:', error);
       alert('Failed to save post');
