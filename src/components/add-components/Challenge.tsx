@@ -2,15 +2,14 @@ import { useState } from 'react';
 import './AddComponents.css';
 
 export default function Challenge() {
-  const [challengeTitle, setChallengeTitle] = useState('');
   const [challengeDescription, setChallengeDescription] = useState('');
   const [challengeGoal, setChallengeGoal] = useState('');
   const [challengeDuration, setChallengeDuration] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveChallenge = async () => {
-    if (!challengeTitle.trim() || !challengeGoal.trim()) {
-      alert('Please fill in at least the title and goal');
+    if (!challengeGoal.trim()) {
+      alert('Please fill in at least the goal');
       return;
     }
 
@@ -21,7 +20,6 @@ export default function Challenge() {
       
       // Placeholder for Supabase integration
       console.log('Saving challenge:', {
-        challengeTitle,
         challengeDescription,
         challengeGoal,
         challengeDuration,
@@ -30,7 +28,6 @@ export default function Challenge() {
       alert('Challenge created successfully!');
       
       // Reset form
-      setChallengeTitle('');
       setChallengeDescription('');
       setChallengeGoal('');
       setChallengeDuration('');
@@ -44,16 +41,6 @@ export default function Challenge() {
 
   return (
     <div className="challenge-form">
-      <h3 className="form-section-title">Challenge Title</h3>
-      <div className="input-group">
-        <input
-          type="text"
-          className="challenge-input"
-          placeholder="e.g., 30-Day Running Challenge"
-          value={challengeTitle}
-          onChange={(e) => setChallengeTitle(e.target.value)}
-        />
-      </div>
 
       <h3 className="form-section-title">Description (Optional)</h3>
       <div className="input-group">
