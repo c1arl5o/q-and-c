@@ -138,6 +138,161 @@
   font-style: italic;
 }
 
+/* Feed Items */
+.feed-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.feed-item {
+  background: #f9f9f9;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.feed-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #FFCC99;
+}
+
+.feed-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.feed-item-author {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.feed-item-author strong {
+  color: #ff9966;
+  font-weight: 600;
+}
+
+.feed-item-time {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.feed-item-content {
+  color: #555;
+}
+
+/* Activity Feed Styles */
+.activity-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.activity-type {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  text-transform: capitalize;
+}
+
+.activity-stats {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.activity-notes {
+  margin-top: 0.75rem;
+  color: #555;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Post Feed Styles */
+.post-content {
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* Challenge Feed Styles */
+.challenge-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.challenge-goal {
+  font-size: 1.05rem;
+  color: #333;
+}
+
+.challenge-goal strong {
+  color: #ff9966;
+}
+
+.challenge-description {
+  color: #666;
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0;
+}
+
+.challenge-duration {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.challenge-completed {
+  color: #4CAF50;
+  font-weight: 600;
+  padding: 0.5rem;
+  background: #e8f5e9;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* Feed Item Photo */
+.feed-item-photo {
+  margin-top: 1rem;
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .feed-item {
+    padding: 1.25rem;
+  }
+
+  .feed-item-author {
+    font-size: 0.9rem;
+  }
+
+  .feed-item-time {
+    font-size: 0.8rem;
+  }
+
+  .activity-type {
+    font-size: 1rem;
+  }
+
+  .activity-stats {
+    font-size: 0.9rem;
+  }
+
+  .feed-item-photo {
+    max-height: 300px;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .home-container {
