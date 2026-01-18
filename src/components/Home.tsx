@@ -99,7 +99,7 @@ export default function Home({ onViewChange }: HomeProps) {
             *,
             user:user_id (
               email,
-              raw_user_meta_data
+              display_name
             )
           `)
           .order('created_at', { ascending: false }),
@@ -109,7 +109,7 @@ export default function Home({ onViewChange }: HomeProps) {
             *,
             user:user_id (
               email,
-              raw_user_meta_data
+              display_name
             )
           `)
           .order('created_at', { ascending: false }),
@@ -119,11 +119,11 @@ export default function Home({ onViewChange }: HomeProps) {
             *,
             creator:created_by_user_id (
               email,
-              raw_user_meta_data
+              display_name
             ),
             target:target_user_id (
               email,
-              raw_user_meta_data
+              display_name
             )
           `)
           .order('created_at', { ascending: false })
@@ -136,7 +136,7 @@ export default function Home({ onViewChange }: HomeProps) {
           type: 'activity' as const,
           user: {
             email: a.user?.email || 'Unknown',
-            display_name: a.user?.raw_user_meta_data?.display_name
+            display_name: a.user?.display_name
           }
         })),
         ...(postsRes.data || []).map(p => ({
@@ -144,7 +144,7 @@ export default function Home({ onViewChange }: HomeProps) {
           type: 'post' as const,
           user: {
             email: p.user?.email || 'Unknown',
-            display_name: p.user?.raw_user_meta_data?.display_name
+            display_name: p.user?.display_name
           }
         })),
         ...(challengesRes.data || []).map(c => ({
@@ -152,11 +152,11 @@ export default function Home({ onViewChange }: HomeProps) {
           type: 'challenge' as const,
           creator: {
             email: c.creator?.email || 'Unknown',
-            display_name: c.creator?.raw_user_meta_data?.display_name
+            display_name: c.creator?.display_name
           },
           target: {
             email: c.target?.email || 'Unknown',
-            display_name: c.target?.raw_user_meta_data?.display_name
+            display_name: c.target?.display_name
           }
         }))
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
