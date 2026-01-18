@@ -1,0 +1,194 @@
+.onboarding-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.onboarding-card {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.onboarding-title {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 2rem;
+}
+
+.onboarding-subtitle {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.workout-frequency {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.frequency-button {
+  flex: 1;
+  min-width: 45px;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.frequency-button:hover {
+  border-color: #007bff;
+  background-color: #e7f3ff;
+}
+
+.frequency-button.active {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.frequency-label {
+  margin-top: 0.5rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.experience-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.experience-button {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.experience-button:hover {
+  border-color: #007bff;
+  background-color: #e7f3ff;
+}
+
+.experience-button.active {
+  background-color: #e7f3ff;
+  border-color: #007bff;
+}
+
+.experience-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.experience-desc {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.error-message {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c33;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.skip-button {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.skip-button:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #999;
+}
+
+.submit-button {
+  flex: 1.5;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.submit-button.loading,
+.skip-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
