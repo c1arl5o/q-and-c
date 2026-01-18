@@ -9,7 +9,7 @@ interface User {
 }
 
 interface ChallengeProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
 }
 
 export default function Challenge({ onViewChange }: ChallengeProps) {

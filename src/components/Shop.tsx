@@ -1,7 +1,7 @@
 import './Shop.css';
 
 interface ShopProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
 }
 
 export default function Shop({ onViewChange }: ShopProps) {

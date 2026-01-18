@@ -9,7 +9,7 @@ interface User {
 }
 
 interface PostProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
 }
 
 export default function Post({ onViewChange }: PostProps) {

@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import './Home.css';
 
 interface HomeProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
 }
 
 interface Activity {
@@ -66,6 +66,7 @@ export default function Home({ onViewChange }: HomeProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [feedLoading, setFeedLoading] = useState(true);
+  const [userCoins, setUserCoins] = useState(0);
 
   useEffect(() => {
     fetchUserData();
@@ -79,6 +80,17 @@ export default function Home({ onViewChange }: HomeProps) {
       if (user) {
         // setDisplayName(user.user_metadata?.display_name || 'there');
         setWorkoutsPerWeek(user.user_metadata?.workouts_per_week || 3);
+        
+        // Fetch user's coins from profiles table
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('coins')
+          .eq('id', user.id)
+          .single();
+        
+        if (profileData) {
+          setUserCoins(profileData.coins || 0);
+        }
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -219,6 +231,15 @@ export default function Home({ onViewChange }: HomeProps) {
             active: true
           },
           {
+            label: 'The Map',
+            href: '#map',
+            onClick: (e) => {
+              e.preventDefault();
+              setIsSidebarOpen(false);
+              onViewChange('map');
+            }
+          },
+          {
             label: 'Shop',
             href: '#shop',
             onClick: (e) => {
@@ -243,7 +264,7 @@ export default function Home({ onViewChange }: HomeProps) {
         <div className="metrics-container">
           <div className="metric-box">
             <div className="metric-icon">🪙</div>
-            <div className="metric-value">0</div>
+            <div className="metric-value">{userCoins}</div>
           </div>
           <div className="metric-box">
             <div className="metric-icon">🔥</div>

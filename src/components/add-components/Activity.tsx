@@ -3,7 +3,7 @@ import { supabase } from '../../config/supabaseClient';
 import './AddComponents.css';
 
 interface ActivityProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
 }
 
 export default function Activity({ onViewChange }: ActivityProps) {
@@ -83,8 +83,43 @@ export default function Activity({ onViewChange }: ActivityProps) {
       if (insertError) {
         throw insertError;
       }
+
+      // Award coins based on activity type
+      const coinRewards = {
+        walking: 5,
+        running: 10,
+        swimming: 15
+      };
+      const coinsEarned = coinRewards[activityType];
+
+      // Update user's coins in profiles table
+      const { error: coinsError } = await supabase.rpc('increment_coins', {
+        user_id: user.id,
+        coins_to_add: coinsEarned
+      });
+
+      // If RPC function doesn't exist, use a direct update
+      if (coinsError?.code === '42883') {
+        // Get current coins
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('coins')
+          .eq('id', user.id)
+          .single();
+
+        const currentCoins = profileData?.coins || 0;
+
+        // Update coins
+        await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            coins: currentCoins + coinsEarned,
+            updated_at: new Date().toISOString()
+          });
+      }
       
-      alert('Activity saved successfully!');
+      alert('Activity saved successfully! You earned ' + coinsEarned + ' coins! 🪙');
       
       // Reset form
       setActivityType('walking');
