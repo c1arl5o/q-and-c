@@ -1,23 +1,29 @@
+/* General Map Layout */
 .map-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #fff5f0 0%, #ffffff 100%);
-  padding: 0;
   padding-top: 80px;
+  display: flex;
+  flex-direction: column;
 }
 
 .loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  flex-grow: 1;
   font-size: 1.2rem;
   color: #ff9966;
 }
 
 .map-content {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .map-header {
@@ -57,47 +63,81 @@
   color: #ff9966;
 }
 
-.map-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.75rem;
-  background: white;
-  padding: 1.5rem;
+/* New Hexagonal Grid Styles */
+.map-viewport {
+  --hex-width: 150px;
+  --hex-height: calc(var(--hex-width) * 1.1547); /* aspect ratio of a hexagon */
+  --grid-gap: 4px;
+  --cols: 6;
+  --rows: 6;
+  --grid-width: calc((var(--cols) * var(--hex-width) * 0.75) + (var(--hex-width) * 0.25));
+  --grid-height: calc(var(--rows) * var(--hex-height) + (var(--hex-height) / 2));
+
+  width: 100%;
+  flex-grow: 1;
+  background: #fff;
   border-radius: 16px;
   border: 2px solid #FFCC99;
   box-shadow: 0 4px 20px rgba(255, 153, 102, 0.1);
-  margin-bottom: 2rem;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+.map-grid {
+  width: var(--grid-width);
+  height: var(--grid-height);
+  position: relative;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
 }
 
 .tile {
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
+  position: absolute;
+  width: var(--hex-width);
+  height: var(--hex-height);
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  border: 3px solid #ccc;
+  transition: all 0.2s ease;
+  
+  /* Positioning logic */
+  --x-pos: calc(var(--x) * var(--hex-width) * 0.75);
+  --y-pos: calc(var(--y) * var(--hex-height) + (var(--x) % 2) * (var(--hex-height) / 2));
+  
+  top: var(--y-pos);
+  left: var(--x-pos);
 }
 
-.tile.locked {
+.tile-content {
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.tile.locked .tile-content {
   background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
   border: 3px solid #999;
 }
 
-.tile.locked:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  border-color: #ff9966;
+.tile.unlocked .tile-content {
+  background: transparent;
 }
 
-.tile.unlocked {
-  border: 3px solid #ff9966;
-  cursor: default;
-  background: transparent;
+.tile:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.tile-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .locked-overlay {
@@ -108,27 +148,30 @@
   font-size: 3rem;
   z-index: 2;
   opacity: 0.8;
+  color: #333;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .tile-progress {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 0 0 10px 10px;
+  bottom: 20%;
+  left: 15%;
+  right: 15%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
   overflow: hidden;
+  z-index: 3;
 }
 
 .progress-bar {
   height: 100%;
   background: linear-gradient(90deg, #FFCC99 0%, #ff9966 100%);
   transition: width 0.3s ease;
+  border-radius: 4px;
 }
 
-/* Modal Styles */
+/* Modal Styles - mostly unchanged */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -145,12 +188,8 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-content {
@@ -160,21 +199,13 @@
   border: 2px solid #FFCC99;
   max-width: 500px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   animation: slideUp 0.3s ease;
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .modal-content h2 {
@@ -185,18 +216,13 @@
   text-align: center;
 }
 
-.modal-info {
+.modal-info, .contribution-input, .modal-actions {
   margin-bottom: 1.5rem;
 }
-
-.modal-info p {
+.modal-info p, .contribution-input label, .input-hint {
   margin: 0.5rem 0;
-  color: #333;
 }
-
-.modal-info strong {
-  color: #ff9966;
-}
+.modal-info strong { color: #ff9966; }
 
 .contribution-bars {
   margin: 1rem 0;
@@ -204,25 +230,21 @@
   flex-direction: column;
   gap: 1rem;
 }
-
 .contribution-bar {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
-
 .contribution-bar > span:first-child {
   font-weight: 600;
   color: #666;
   font-size: 0.9rem;
 }
-
 .contribution-bar > span:last-child {
   font-size: 0.85rem;
   color: #999;
   text-align: right;
 }
-
 .bar {
   height: 24px;
   background: #f0f0f0;
@@ -230,19 +252,9 @@
   overflow: hidden;
   border: 2px solid #e0e0e0;
 }
-
-.bar-fill {
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.bar-fill.user1 {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-}
-
-.bar-fill.user2 {
-  background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-}
+.bar-fill { height: 100%; transition: width 0.3s ease; }
+.bar-fill.user1 { background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); }
+.bar-fill.user2 { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
 
 .info-text {
   font-size: 0.9rem;
@@ -255,17 +267,6 @@
   border-left: 4px solid #ff9966;
 }
 
-.contribution-input {
-  margin: 1.5rem 0;
-}
-
-.contribution-input label {
-  display: block;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
 .contribution-input input {
   width: 100%;
   padding: 0.875rem 1rem;
@@ -275,31 +276,15 @@
   box-sizing: border-box;
   transition: all 0.3s ease;
 }
-
-.contribution-input input:hover {
-  border-color: #ff9966;
-}
-
+.contribution-input input:hover { border-color: #ff9966; }
 .contribution-input input:focus {
   outline: none;
   border-color: #ff9966;
   box-shadow: 0 0 0 3px rgba(255, 153, 102, 0.1);
 }
 
-.input-hint {
-  font-size: 0.85rem;
-  color: #999;
-  margin-top: 0.5rem !important;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.btn-cancel,
-.btn-contribute {
+.modal-actions { display: flex; gap: 1rem; }
+.btn-cancel, .btn-contribute {
   flex: 1;
   padding: 0.875rem 1.5rem;
   font-size: 1rem;
@@ -309,60 +294,33 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
-.btn-cancel {
-  background: white;
-  border: 2px solid #FFCC99;
-  color: #ff9966;
-}
-
-.btn-cancel:hover {
-  background: #fff5f0;
-}
-
-.btn-contribute {
-  background: linear-gradient(135deg, #FFCC99 0%, #ff9966 100%);
-  color: white;
-}
-
+.btn-cancel { background: white; border: 2px solid #FFCC99; color: #ff9966; }
+.btn-cancel:hover { background: #fff5f0; }
+.btn-contribute { background: linear-gradient(135deg, #FFCC99 0%, #ff9966 100%); color: white; }
 .btn-contribute:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 153, 102, 0.4);
 }
+.btn-contribute:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-contribute:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .map-container {
-    padding-top: 70px;
+  .map-container { padding-top: 70px; }
+  .map-content { padding: 1rem; }
+  .map-title { font-size: 1.5rem; }
+  
+  .map-viewport {
+    --hex-width: 120px;
   }
 
-  .map-content {
-    padding: 1rem;
-  }
+  .modal-content { padding: 1.5rem; }
+  .modal-content h2 { font-size: 1.5rem; }
+  .modal-actions { flex-direction: column; }
+}
 
-  .map-title {
-    font-size: 1.5rem;
-  }
-
-  .map-grid {
-    gap: 0.5rem;
-    padding: 1rem;
-  }
-
-  .modal-content {
-    padding: 1.5rem;
-  }
-
-  .modal-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .modal-actions {
-    flex-direction: column;
+@media (max-width: 480px) {
+  .map-viewport {
+    --hex-width: 90px;
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../config/supabaseClient';
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -29,6 +29,13 @@ export default function Map({ onViewChange }: MapProps) {
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [contributionAmount, setContributionAmount] = useState<number>(0);
 
+  // New state for zoom and pan
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const mapRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -36,35 +43,24 @@ export default function Map({ onViewChange }: MapProps) {
   const fetchData = async () => {
     try {
       setLoading(true);
-
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
       setCurrentUserId(user.id);
 
-      // Fetch user's coins and all profiles
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('*');
-
+      const { data: profiles } = await supabase.from('profiles').select('*');
       if (profiles) {
         const currentUserProfile = profiles.find(p => p.id === user.id);
         setCurrentUserCoins(currentUserProfile?.coins || 0);
       }
 
-      // Fetch all tiles
       const { data: tilesData, error: tilesError } = await supabase
         .from('tiles')
         .select('*')
         .order('position_y', { ascending: true })
         .order('position_x', { ascending: true });
 
-      if (tilesError) {
-        console.error('Error fetching tiles:', tilesError);
-      } else {
-        setTiles(tilesData || []);
-      }
+      if (tilesError) console.error('Error fetching tiles:', tilesError);
+      else setTiles(tilesData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -72,14 +68,7 @@ export default function Map({ onViewChange }: MapProps) {
     }
   };
 
-  // Map tile position to hexagon image number
-  // Layout: top-left starts at 001, goes vertically down to 006, then moves right
-  // Grid is 6 columns x 6 rows, hexagons numbered 001-036
   const getHexagonImageNumber = (positionX: number, positionY: number): string => {
-    // positionX: 0-5 (columns), positionY: 0-5 (rows)
-    // Hexagon numbering: column by column, from top to bottom
-    // Column 0 (x=0): hexagons 1-6 (top to bottom)
-    // Column 1 (x=1): hexagons 7-12 (top to bottom)
     const hexagonNumber = (positionX * 6) + positionY + 1;
     return hexagonNumber.toString().padStart(3, '0');
   };
@@ -90,14 +79,13 @@ export default function Map({ onViewChange }: MapProps) {
   };
 
   const handleTileClick = (tile: Tile) => {
+    if (isDragging) return;
     if (tile.is_unlocked) {
       alert('This tile is already unlocked!');
       return;
     }
     setSelectedTile(tile);
-    // Calculate max contribution (50% of unlock cost)
     const maxContribution = Math.floor(tile.unlock_cost / 2);
-    // Set default contribution to what user still needs to contribute
     const alreadyContributed = tile.user1_contribution + tile.user2_contribution;
     const needed = tile.unlock_cost - alreadyContributed;
     const suggestedAmount = Math.min(maxContribution, needed, currentUserCoins);
@@ -106,83 +94,53 @@ export default function Map({ onViewChange }: MapProps) {
 
   const handleContribute = async () => {
     if (!selectedTile || !currentUserId) return;
-
     if (contributionAmount <= 0) {
       alert('Please enter a valid contribution amount');
       return;
     }
-
     if (contributionAmount > currentUserCoins) {
       alert('You don\'t have enough coins!');
       return;
     }
 
     const maxContribution = Math.floor(selectedTile.unlock_cost / 2);
-    
-    try {
-      // Determine which user slot to use
-      // For simplicity, we'll use user1 for the first contributor and user2 for the second
-      // In a real app, you'd want to track user IDs properly
-      const isUser1 = selectedTile.user1_contribution === 0 || 
-                      (selectedTile.user2_contribution > 0 && selectedTile.user1_contribution < maxContribution);
 
-      const newUser1Contribution = isUser1 
+    try {
+      const isUser1 = selectedTile.user1_contribution === 0 ||
+        (selectedTile.user2_contribution > 0 && selectedTile.user1_contribution < maxContribution);
+
+      const newUser1Contribution = isUser1
         ? Math.min(selectedTile.user1_contribution + contributionAmount, maxContribution)
         : selectedTile.user1_contribution;
-      
-      const newUser2Contribution = !isUser1 
+
+      const newUser2Contribution = !isUser1
         ? Math.min(selectedTile.user2_contribution + contributionAmount, maxContribution)
         : selectedTile.user2_contribution;
 
-      // Check if contribution would exceed 50%
-      if (isUser1 && newUser1Contribution > maxContribution) {
-        alert(`You can only contribute up to ${maxContribution} coins (50% of unlock cost)`);
-        return;
-      }
-      if (!isUser1 && newUser2Contribution > maxContribution) {
+      if ((isUser1 && newUser1Contribution > maxContribution) || (!isUser1 && newUser2Contribution > maxContribution)) {
         alert(`You can only contribute up to ${maxContribution} coins (50% of unlock cost)`);
         return;
       }
 
-      // Update tile contributions
-      const { error: updateError } = await supabase
-        .from('tiles')
-        .update({
-          user1_contribution: newUser1Contribution,
-          user2_contribution: newUser2Contribution,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', selectedTile.id);
+      await supabase.from('tiles').update({
+        user1_contribution: newUser1Contribution,
+        user2_contribution: newUser2Contribution,
+        updated_at: new Date().toISOString()
+      }).eq('id', selectedTile.id);
 
-      if (updateError) {
-        throw updateError;
-      }
+      await supabase.from('profiles').update({
+        coins: currentUserCoins - contributionAmount,
+        updated_at: new Date().toISOString()
+      }).eq('id', currentUserId);
 
-      // Deduct coins from user
-      const { error: coinsError } = await supabase
-        .from('profiles')
-        .update({
-          coins: currentUserCoins - contributionAmount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', currentUserId);
-
-      if (coinsError) {
-        throw coinsError;
-      }
-
-      // Check if tile is now unlocked
-      const totalContribution = newUser1Contribution + newUser2Contribution;
-      const isNowUnlocked = newUser1Contribution >= maxContribution && 
-                            newUser2Contribution >= maxContribution;
-
+      const isNowUnlocked = newUser1Contribution >= maxContribution && newUser2Contribution >= maxContribution;
       if (isNowUnlocked) {
         alert('🎉 Tile unlocked! The cozy town is growing!');
       } else {
+        const totalContribution = newUser1Contribution + newUser2Contribution;
         alert(`Contribution successful! ${selectedTile.unlock_cost - totalContribution} coins still needed to unlock this tile.`);
       }
 
-      // Refresh data
       setSelectedTile(null);
       setContributionAmount(0);
       await fetchData();
@@ -192,48 +150,44 @@ export default function Map({ onViewChange }: MapProps) {
     }
   };
 
+  // Zoom and Pan handlers
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const zoomFactor = 1.1;
+    const newZoom = e.deltaY > 0 ? zoom / zoomFactor : zoom * zoomFactor;
+    setZoom(Math.max(0.5, Math.min(newZoom, 3))); // Clamp zoom level
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   if (loading) {
-    return (
-      <div className="map-container">
-        <div className="loading">Loading map...</div>
-      </div>
-    );
+    return <div className="map-container"><div className="loading">Loading map...</div></div>;
   }
 
   return (
     <div className="map-container">
       <Header onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
-
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         navItems={[
-          {
-            label: 'Home',
-            href: '#',
-            onClick: (e) => {
-              e.preventDefault();
-              setIsSidebarOpen(false);
-              onViewChange('home');
-            }
-          },
-          {
-            label: 'The Map',
-            href: '#map',
-            active: true
-          },
-          {
-            label: 'Shop',
-            href: '#shop',
-            onClick: (e) => {
-              e.preventDefault();
-              setIsSidebarOpen(false);
-              onViewChange('shop');
-            }
-          }
+          { label: 'Home', href: '#', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('home'); } },
+          { label: 'The Map', href: '#map', active: true },
+          { label: 'Shop', href: '#shop', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('shop'); } }
         ]}
       />
-
       <div className="map-content">
         <div className="map-header">
           <h1 className="map-title">The Cozy Town</h1>
@@ -243,37 +197,55 @@ export default function Map({ onViewChange }: MapProps) {
           </div>
         </div>
 
-        <div className="map-grid">
-          {tiles.map((tile) => (
-            <div
-              key={tile.id}
-              className={`tile ${tile.is_unlocked ? 'unlocked' : 'locked'}`}
-              onClick={() => handleTileClick(tile)}
-              style={{
-                backgroundImage: tile.is_unlocked ? `url(${getHexagonImage(tile)})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              {!tile.is_unlocked && (
-                <>
-                  <div className="locked-overlay">🔒</div>
+        {/* Viewport for map */}
+        <div
+          className="map-viewport"
+          ref={mapRef}
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <div
+            className="map-grid"
+            style={{
+              transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
+            }}
+          >
+            {tiles.map((tile) => (
+              <div
+                key={tile.id}
+                className={`tile ${tile.is_unlocked ? 'unlocked' : 'locked'}`}
+                onClick={() => handleTileClick(tile)}
+                style={{
+                  '--x': tile.position_x,
+                  '--y': tile.position_y,
+                } as React.CSSProperties}
+              >
+                <div className="tile-content">
+                  {tile.is_unlocked ? (
+                    <img src={getHexagonImage(tile)} alt={`Tile ${tile.position_x}, ${tile.position_y}`} />
+                  ) : (
+                    <div className="locked-overlay">🔒</div>
+                  )}
+                </div>
+                {!tile.is_unlocked && (
                   <div className="tile-progress">
-                    <div 
+                    <div
                       className="progress-bar"
-                      style={{ 
-                        width: `${((tile.user1_contribution + tile.user2_contribution) / tile.unlock_cost) * 100}%` 
+                      style={{
+                        width: `${((tile.user1_contribution + tile.user2_contribution) / tile.unlock_cost) * 100}%`
                       }}
                     />
                   </div>
-                </>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Contribution Modal */}
       {selectedTile && (
         <div className="modal-overlay" onClick={() => setSelectedTile(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -286,10 +258,10 @@ export default function Map({ onViewChange }: MapProps) {
                 <div className="contribution-bar">
                   <span>User 1:</span>
                   <div className="bar">
-                    <div 
+                    <div
                       className="bar-fill user1"
-                      style={{ 
-                        width: `${(selectedTile.user1_contribution / (selectedTile.unlock_cost / 2)) * 100}%` 
+                      style={{
+                        width: `${(selectedTile.user1_contribution / (selectedTile.unlock_cost / 2)) * 100}%`
                       }}
                     />
                   </div>
@@ -298,10 +270,10 @@ export default function Map({ onViewChange }: MapProps) {
                 <div className="contribution-bar">
                   <span>User 2:</span>
                   <div className="bar">
-                    <div 
+                    <div
                       className="bar-fill user2"
-                      style={{ 
-                        width: `${(selectedTile.user2_contribution / (selectedTile.unlock_cost / 2)) * 100}%` 
+                      style={{
+                        width: `${(selectedTile.user2_contribution / (selectedTile.unlock_cost / 2)) * 100}%`
                       }}
                     />
                   </div>
@@ -312,7 +284,6 @@ export default function Map({ onViewChange }: MapProps) {
                 Both users must contribute at least 50% to unlock this tile.
               </p>
             </div>
-            
             <div className="contribution-input">
               <label>Your Contribution:</label>
               <input
@@ -326,15 +297,11 @@ export default function Map({ onViewChange }: MapProps) {
                 Max: {Math.min(currentUserCoins, Math.floor(selectedTile.unlock_cost / 2))} coins
               </p>
             </div>
-
             <div className="modal-actions">
-              <button 
-                className="btn-cancel"
-                onClick={() => setSelectedTile(null)}
-              >
+              <button className="btn-cancel" onClick={() => setSelectedTile(null)}>
                 Cancel
               </button>
-              <button 
+              <button
                 className="btn-contribute"
                 onClick={handleContribute}
                 disabled={contributionAmount <= 0 || contributionAmount > currentUserCoins}
