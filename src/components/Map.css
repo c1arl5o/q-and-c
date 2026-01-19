@@ -70,8 +70,10 @@
   --grid-gap: 4px;
   --cols: 6;
   --rows: 6;
-  --grid-width: calc((var(--cols) * var(--hex-width) * 0.75) + (var(--hex-width) * 0.25));
-  --grid-height: calc(var(--rows) * var(--hex-height) + (var(--hex-height) / 2));
+  /* Grid width calculation: 6 columns at 75% overlap + 25% for first hex */
+  --grid-width: calc((var(--cols) * var(--hex-width) * 0.75) + (var(--hex-width) * 0.25) + 50px);
+  /* Grid height: 6 rows * height + half height for odd column offset + padding */
+  --grid-height: calc((var(--rows) * var(--hex-height)) + (var(--hex-height) / 2) + 100px);
 
   width: 100%;
   flex-grow: 1;
@@ -82,6 +84,9 @@
   overflow: hidden;
   cursor: grab;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .map-viewport:active {
@@ -94,6 +99,7 @@
   position: relative;
   transform-origin: center center;
   transition: transform 0.1s ease-out;
+  padding: 50px;
 }
 
 .tile {
@@ -103,9 +109,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   
-  /* Positioning logic */
+  /* Positioning logic for honeycomb pattern */
+  /* Horizontal: each column is 75% of hex width apart */
   --x-pos: calc(var(--x) * var(--hex-width) * 0.75);
-  --y-pos: calc(var(--y) * var(--hex-height) + (var(--x) % 2) * (var(--hex-height) / 2));
+  /* Vertical: each row is full height apart, odd columns (x=1,3,5) are offset down by half height */
+  --y-pos: calc(var(--y) * var(--hex-height) + (var(--x-offset) * (var(--hex-height) / 2)));
   
   top: var(--y-pos);
   left: var(--x-pos);

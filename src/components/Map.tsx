@@ -60,7 +60,10 @@ export default function Map({ onViewChange }: MapProps) {
         .order('position_x', { ascending: true });
 
       if (tilesError) console.error('Error fetching tiles:', tilesError);
-      else setTiles(tilesData || []);
+      else {
+        console.log(`Fetched ${tilesData?.length || 0} tiles`);
+        setTiles(tilesData || []);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -221,6 +224,7 @@ export default function Map({ onViewChange }: MapProps) {
                 style={{
                   '--x': tile.position_x,
                   '--y': tile.position_y,
+                  '--x-offset': tile.position_x % 2,
                 } as React.CSSProperties}
               >
                 <div className="tile-content">
