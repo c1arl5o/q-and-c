@@ -86,7 +86,7 @@ export default function Map({ onViewChange }: MapProps) {
 
   const getHexagonImage = (tile: Tile): string => {
     const hexNumber = getHexagonImageNumber(tile.position_x, tile.position_y);
-    return `/src/assets/hexagon_output/hexagon_${hexNumber}.png`;
+    return `/hexagon_output/hexagon_${hexNumber}.png`;
   };
 
   const handleTileClick = (tile: Tile) => {
