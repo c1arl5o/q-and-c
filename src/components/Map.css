@@ -80,11 +80,12 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  border: 3px solid #ccc;
 }
 
 .tile.locked {
   background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
-  border: 2px solid #ccc;
+  border: 3px solid #999;
 }
 
 .tile.locked:hover {
@@ -94,14 +95,20 @@
 }
 
 .tile.unlocked {
-  background: linear-gradient(135deg, #FFCC99 0%, #ffe5d9 100%);
-  border: 2px solid #ff9966;
+  border: 3px solid #ff9966;
   cursor: default;
+  background: transparent;
 }
 
-.tile-emoji {
-  font-size: 2rem;
-  z-index: 1;
+.locked-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  z-index: 2;
+  opacity: 0.8;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .tile-progress {
@@ -119,35 +126,6 @@
   height: 100%;
   background: linear-gradient(90deg, #FFCC99 0%, #ff9966 100%);
   transition: width 0.3s ease;
-}
-
-.map-legend {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 16px;
-  border: 2px solid #FFCC99;
-  box-shadow: 0 4px 20px rgba(255, 153, 102, 0.1);
-}
-
-.map-legend h3 {
-  font-size: 1.25rem;
-  color: #ff9966;
-  margin: 0 0 1rem 0;
-  font-weight: 600;
-}
-
-.legend-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.legend-item {
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  background: #fff5f0;
-  border-radius: 8px;
-  border: 1px solid #FFCC99;
 }
 
 /* Modal Styles */
@@ -374,10 +352,6 @@
   .map-grid {
     gap: 0.5rem;
     padding: 1rem;
-  }
-
-  .tile-emoji {
-    font-size: 1.5rem;
   }
 
   .modal-content {

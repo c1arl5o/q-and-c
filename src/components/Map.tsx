@@ -72,18 +72,21 @@ export default function Map({ onViewChange }: MapProps) {
     }
   };
 
-  const getTileEmoji = (tileType: string, isUnlocked: boolean) => {
-    if (!isUnlocked) return '🔒';
+  // Map tile position to hexagon image number
+  // Layout: top-left starts at 001, goes vertically down to 006, then moves right
+  // Grid is 6 columns x 6 rows, hexagons numbered 001-036
+  const getHexagonImageNumber = (positionX: number, positionY: number): string => {
+    // positionX: 0-5 (columns), positionY: 0-5 (rows)
+    // Hexagon numbering: column by column, from top to bottom
+    // Column 0 (x=0): hexagons 1-6 (top to bottom)
+    // Column 1 (x=1): hexagons 7-12 (top to bottom)
+    const hexagonNumber = (positionX * 6) + positionY + 1;
+    return hexagonNumber.toString().padStart(3, '0');
+  };
 
-    switch (tileType) {
-      case 'road': return '🛣️';
-      case 'house': return '🏠';
-      case 'shop': return '🏪';
-      case 'forest': return '🌲';
-      case 'park': return '🌳';
-      case 'building': return '🏢';
-      default: return '🏠';
-    }
+  const getHexagonImage = (tile: Tile): string => {
+    const hexNumber = getHexagonImageNumber(tile.position_x, tile.position_y);
+    return `/src/assets/hexagon_output/hexagon_${hexNumber}.png`;
   };
 
   const handleTileClick = (tile: Tile) => {
@@ -246,35 +249,27 @@ export default function Map({ onViewChange }: MapProps) {
               key={tile.id}
               className={`tile ${tile.is_unlocked ? 'unlocked' : 'locked'}`}
               onClick={() => handleTileClick(tile)}
+              style={{
+                backgroundImage: tile.is_unlocked ? `url(${getHexagonImage(tile)})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
-              <span className="tile-emoji">
-                {getTileEmoji(tile.tile_type, tile.is_unlocked)}
-              </span>
               {!tile.is_unlocked && (
-                <div className="tile-progress">
-                  <div 
-                    className="progress-bar"
-                    style={{ 
-                      width: `${((tile.user1_contribution + tile.user2_contribution) / tile.unlock_cost) * 100}%` 
-                    }}
-                  />
-                </div>
+                <>
+                  <div className="locked-overlay">🔒</div>
+                  <div className="tile-progress">
+                    <div 
+                      className="progress-bar"
+                      style={{ 
+                        width: `${((tile.user1_contribution + tile.user2_contribution) / tile.unlock_cost) * 100}%` 
+                      }}
+                    />
+                  </div>
+                </>
               )}
             </div>
           ))}
-        </div>
-
-        <div className="map-legend">
-          <h3>Legend</h3>
-          <div className="legend-items">
-            <div className="legend-item">🔒 Locked</div>
-            <div className="legend-item">🛣️ Road</div>
-            <div className="legend-item">🏠 House</div>
-            <div className="legend-item">🏪 Shop</div>
-            <div className="legend-item">🌲 Forest</div>
-            <div className="legend-item">🌳 Park</div>
-            <div className="legend-item">🏢 Building</div>
-          </div>
         </div>
       </div>
 
