@@ -20,7 +20,7 @@ interface Tile {
   image_url: string | null;
 }
 
-export default function Map({ onViewChange, imageId = 'image-1' }: MapProps) {
+export default function Map({ onViewChange, /*imageId = 'image-1' */}: MapProps) {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
