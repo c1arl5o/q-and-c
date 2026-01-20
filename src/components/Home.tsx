@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import './Home.css';
 
 interface HomeProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map' | 'imagehub') => void;
 }
 
 interface Activity {
@@ -236,7 +236,7 @@ export default function Home({ onViewChange }: HomeProps) {
             onClick: (e) => {
               e.preventDefault();
               setIsSidebarOpen(false);
-              onViewChange('map');
+              onViewChange('imagehub');
             }
           },
           {

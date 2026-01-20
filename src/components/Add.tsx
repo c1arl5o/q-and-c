@@ -5,7 +5,7 @@ import Post from './add-components/Post';
 import Challenge from './add-components/Challenge';
 
 interface AddProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map' | 'imagehub') => void;
 }
 
 export default function Add({ onViewChange }: AddProps) {

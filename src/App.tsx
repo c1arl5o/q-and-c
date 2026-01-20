@@ -6,12 +6,14 @@ import Home from './components/Home'
 import Shop from './components/Shop'
 import Add from './components/Add'
 import Map from './components/Map'
+import ImageHub from './components/ImageHub'
 
-type AppView = 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map';
+type AppView = 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map' | 'imagehub';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('signin')
   const [loading, setLoading] = useState(true)
+  const [selectedImageId, setSelectedImageId] = useState<string>('image-1')
 
   useEffect(() => {
     checkUserStatus()
@@ -79,6 +81,10 @@ function App() {
     setCurrentView(view)
   }
 
+  const handleImageSelect = (imageId: string) => {
+    setSelectedImageId(imageId)
+  }
+
   if (loading) {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>Loading...</div>
   }
@@ -100,8 +106,11 @@ function App() {
       {currentView === 'add' && (
         <Add onViewChange={handleViewChange} />
       )}
+      {currentView === 'imagehub' && (
+        <ImageHub onViewChange={handleViewChange} onImageSelect={handleImageSelect} />
+      )}
       {currentView === 'map' && (
-        <Map onViewChange={handleViewChange} />
+        <Map onViewChange={handleViewChange} imageId={selectedImageId} />
       )}
     </>
   )

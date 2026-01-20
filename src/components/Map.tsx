@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../config/supabaseClient';
-import Header from './Header';
 import Sidebar from './Sidebar';
 import './Map.css';
 
 interface MapProps {
-  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map') => void;
+  onViewChange: (view: 'signin' | 'onboarding' | 'home' | 'shop' | 'add' | 'map' | 'imagehub') => void;
+  imageId?: string;
 }
 
 interface Tile {
@@ -20,7 +20,7 @@ interface Tile {
   image_url: string | null;
 }
 
-export default function Map({ onViewChange }: MapProps) {
+export default function Map({ onViewChange, imageId = 'image-1' }: MapProps) {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -175,24 +175,31 @@ export default function Map({ onViewChange }: MapProps) {
 
   return (
     <div className="map-container">
-      <Header onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         navItems={[
           { label: 'Home', href: '#', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('home'); } },
-          { label: 'The Map', href: '#map', active: true },
+          { label: 'The Map', href: '#map', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('imagehub'); } },
           { label: 'Shop', href: '#shop', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('shop'); } }
         ]}
       />
-      <div className="map-content">
-        <div className="map-header">
-          <h1 className="map-title">The Cozy Town</h1>
-          <div className="coins-display">
-            <span className="coin-icon">🪙</span>
-            <span className="coin-amount">{currentUserCoins}</span>
-          </div>
+      
+      {/* Fixed Header Overlay */}
+      <div className="map-fixed-header">
+        <button className="back-button" onClick={() => onViewChange('imagehub')}>
+          ← Back
+        </button>
+        <div className="coins-display">
+          <span className="coin-icon">🪙</span>
+          <span className="coin-amount">{currentUserCoins}</span>
         </div>
+        <button className="menu-button" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          ☰
+        </button>
+      </div>
+
+      <div className="map-content">
 
         {/* Viewport for map */}
         <div
