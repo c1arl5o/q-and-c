@@ -71,14 +71,8 @@ export default function Map({ onViewChange }: MapProps) {
     }
   };
 
-  const getHexagonImageNumber = (positionX: number, positionY: number): string => {
-    const hexagonNumber = (positionX * 6) + positionY + 1;
-    return hexagonNumber.toString().padStart(3, '0');
-  };
-
-  const getHexagonImage = (tile: Tile): string => {
-    const hexNumber = getHexagonImageNumber(tile.position_x, tile.position_y);
-    return `/hexagon_output/hexagon_${hexNumber}.png`;
+  const getSquareTileImage = (tile: Tile): string => {
+    return `/square_output/tile_${tile.position_x}_${tile.position_y}.png`;
   };
 
   const handleTileClick = (tile: Tile) => {
@@ -224,12 +218,11 @@ export default function Map({ onViewChange }: MapProps) {
                 style={{
                   '--x': tile.position_x,
                   '--y': tile.position_y,
-                  '--x-offset': tile.position_x % 2,
                 } as React.CSSProperties}
               >
                 <div className="tile-content">
                   {tile.is_unlocked ? (
-                    <img src={getHexagonImage(tile)} alt={`Tile ${tile.position_x}, ${tile.position_y}`} />
+                    <img src={getSquareTileImage(tile)} alt={`Tile ${tile.position_x}, ${tile.position_y}`} />
                   ) : (
                     <div className="locked-overlay">🔒</div>
                   )}
