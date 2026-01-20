@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../config/supabaseClient';
-import Sidebar from './Sidebar';
 import './Map.css';
 
 interface MapProps {
@@ -23,7 +22,6 @@ interface Tile {
 export default function Map({ onViewChange, /*imageId = 'image-1' */}: MapProps) {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentUserCoins, setCurrentUserCoins] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
@@ -169,22 +167,31 @@ export default function Map({ onViewChange, /*imageId = 'image-1' */}: MapProps)
     setIsDragging(false);
   };
 
+  // Touch handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({ x: touch.clientX - pan.x, y: touch.clientY - pan.y });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    setPan({ x: touch.clientX - dragStart.x, y: touch.clientY - dragStart.y });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   if (loading) {
     return <div className="map-container"><div className="loading">Loading map...</div></div>;
   }
 
   return (
     <div className="map-container">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        navItems={[
-          { label: 'Home', href: '#', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('home'); } },
-          { label: 'The Map', href: '#map', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('imagehub'); } },
-          { label: 'Shop', href: '#shop', onClick: (e) => { e.preventDefault(); setIsSidebarOpen(false); onViewChange('shop'); } }
-        ]}
-      />
-      
       {/* Fixed Header Overlay */}
       <div className="map-fixed-header">
         <button className="back-button" onClick={() => onViewChange('imagehub')}>
@@ -194,9 +201,6 @@ export default function Map({ onViewChange, /*imageId = 'image-1' */}: MapProps)
           <span className="coin-icon">🪙</span>
           <span className="coin-amount">{currentUserCoins}</span>
         </div>
-        <button className="menu-button" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-          ☰
-        </button>
       </div>
 
       <div className="map-content">
@@ -210,6 +214,9 @@ export default function Map({ onViewChange, /*imageId = 'image-1' */}: MapProps)
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <div
             className="map-grid"
